@@ -294,8 +294,9 @@ input {
   display: block;
   overflow-wrap: anywhere;
   font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
-  font-size: clamp(1.45rem, 3vw, 2.25rem);
+  font-size: clamp(1.35rem, 2.7vw, 2.25rem);
   line-height: 1.15;
+  white-space: nowrap;
 }
 
 .stat-band span,

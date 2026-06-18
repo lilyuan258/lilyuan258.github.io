@@ -7,7 +7,6 @@ import { SITE } from "../site.config";
 import {
   compactNumber,
   daysBetween,
-  formatDate,
   getLatestDate,
   getTotalWords,
   sortPosts
@@ -47,7 +46,7 @@ const latestDate = getLatestDate(posts);
           <span>Days Online</span>
         </div>
         <div>
-          <strong>{latestDate ? formatDate(latestDate) : "N/A"}</strong>
+          <strong>{latestDate ? latestDate.toISOString().slice(0, 10) : "N/A"}</strong>
           <span>Last Updated</span>
         </div>
         <div>
