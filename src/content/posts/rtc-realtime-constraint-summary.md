@@ -11,9 +11,13 @@ source: RTC_realtime_constraint_summary_obsidian.md
 wordCount: 1482
 readingTime: 3
 ---
+
 <img src="../../notes-assets/rtc-1.jpg" alt="rtc_1.jpg" loading="lazy" width="533" />
+
+
 <img src="../../notes-assets/rtc-2.jpg" alt="rtc_2.jpg" loading="lazy" width="532" height="709" />
-# RTC 中实时约束与 `d <= s <= H-d` 条件的理解
+
+## RTC 中实时约束与 `d <= s <= H-d` 条件的理解
 
 本文档总结关于 RTC（Real-Time Chunking）中实时执行约束的讨论，重点澄清 `s`、`d`、`H` 的含义，以及为什么不能把 `d <= H-s` 直接解释成“开始推理后旧 chunk 还够用”。
 

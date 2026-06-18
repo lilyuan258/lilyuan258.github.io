@@ -1,9 +1,9 @@
 ---
 title: π*₀.₆ / Pistar06 RECAP 学习笔记
 description: >-
-  [!summary] RECAP 的核心思想 ： 不直接用传统 policy gradient 去更新大型 VLA，而是训练一个 价值函数
+  RECAP 的核心思想 ： 不直接用传统 policy gradient 去更新大型 VLA，而是训练一个 价值函数
   评估机器人当前状态的好坏；再用价值函数给数据里的动作计算 advantage（优势） ；然后把 advantage 二值化成 positive /
-  negative 条件 token，喂给 VLA 继
+  negative 条件 token，喂给 VLA 继续做监督学习 / fl
 pubDate: '2026-06-18'
 updatedDate: '2026-06-18'
 tags:
@@ -25,10 +25,16 @@ readingTime: 17
 > 推理时，直接让模型在 `Advantage: positive` 条件下生成动作，相当于从全部数据中提取更优策略。
 
 ---
+
 <img src="../../notes-assets/pi0-6-1.jpg" alt="pi0.6_1.jpg" loading="lazy" />
+
+
 <img src="../../notes-assets/pi0-6-2.jpg" alt="pi0.6_2.jpg" loading="lazy" />
+
+
 <img src="../../notes-assets/pi0-6-3.jpg" alt="pi0.6_3.jpg" loading="lazy" width="598" height="797" />
-# 0. 一句话总览
+
+## 0. 一句话总览
 
 π₀ / π₀.₅ 已经解决了：
 
@@ -61,7 +67,7 @@ $$
 
 ---
 
-# 1. RECAP 到底解决什么问题？
+## 1. RECAP 到底解决什么问题？
 
 传统机器人 RL 很难直接用于 π₀.₆ 这种大型 VLA，主要原因是：
 
@@ -89,7 +95,7 @@ $$
 
 ---
 
-# 2. 基础符号：trajectory、policy、return
+## 2. 基础符号：trajectory、policy、return
 
 ## 2.1 轨迹 trajectory
 
@@ -174,7 +180,7 @@ $$
 
 ---
 
-# 3. Reward、Return、Value、Advantage
+## 3. Reward、Return、Value、Advantage
 
 ## 3.1 reward
 
@@ -345,7 +351,7 @@ $$
 
 ---
 
-# 4. 图 3 中的 advantage 公式
+## 4. 图 3 中的 advantage 公式
 
 图 3 里的核心公式是 n-step advantage：
 
@@ -463,7 +469,7 @@ advantage 为负，说明虽然走了 10 步，但实际进展不够，甚至比
 
 ---
 
-# 5. 价值函数：distributional value function
+## 5. 价值函数：distributional value function
 
 RECAP 不直接训练一个标量 value，而是训练一个分布式价值函数：
 
@@ -607,7 +613,7 @@ $$
 
 ---
 
-# 6. reference policy 是什么？
+## 6. reference policy 是什么？
 
 RECAP 中常用：
 
@@ -646,7 +652,7 @@ $$
 
 ---
 
-# 7. advantage 二值化：positive / negative
+## 7. advantage 二值化：positive / negative
 
 计算出 advantage 后，不直接把连续 advantage 喂给模型，而是二值化：
 
@@ -738,7 +744,7 @@ $$
 
 ---
 
-# 8. policy extraction：从 value 到更优 policy
+## 8. policy extraction：从 value 到更优 policy
 
 ## 8.1 为什么叫 policy extraction？
 
@@ -809,7 +815,7 @@ $$
 
 ---
 
-# 9. Equation 2：用 Bayes rule 得到 advantage-conditioned policy
+## 9. Equation 2：用 Bayes rule 得到 advantage-conditioned policy
 
 RECAP 使用一种与 CFGRL / classifier-free guidance 思路相近的写法。
 
@@ -922,7 +928,7 @@ $$
 
 ---
 
-# 10. Equation 3：advantage-conditioned 策略训练目标
+## 10. Equation 3：advantage-conditioned 策略训练目标
 
 论文策略训练目标：
 
@@ -1004,7 +1010,7 @@ Advantage: negative 下，这个状态会出现什么动作
 
 ---
 
-# 11. 人类 intervention 怎么处理？
+## 11. 人类 intervention 怎么处理？
 
 专家 intervention 是人类在机器人执行过程中提供的纠正动作。
 
@@ -1024,7 +1030,7 @@ $$
 
 ---
 
-# 12. π₀.₆ 模型架构
+## 12. π₀.₆ 模型架构
 
 π₀.₆ 可以写成：
 
@@ -1144,7 +1150,7 @@ $$
 
 ---
 
-# 13. π₀.₆ 的概率分解
+## 13. π₀.₆ 的概率分解
 
 π₀.₆ 同时预测：
 
@@ -1189,7 +1195,7 @@ $$
 
 ---
 
-# 14. π*₀.₆：advantage token 插在哪里？
+## 14. π*₀.₆：advantage token 插在哪里？
 
 π*₀.₆ 在 π₀.₆ 基础上增加：
 
@@ -1241,7 +1247,7 @@ $$
 
 ---
 
-# 15. flow matching 与 advantage conditioning
+## 15. flow matching 与 advantage conditioning
 
 连续动作无法像普通分类 token 一样直接用 softmax likelihood 训练，所以用 flow matching。
 
@@ -1316,7 +1322,7 @@ Advantage: positive / negative
 
 ---
 
-# 16. classifier-free guidance 视角
+## 16. classifier-free guidance 视角
 
 因为模型同时学：
 
@@ -1375,7 +1381,7 @@ $$
 
 ---
 
-# 17. Algorithm 1：RECAP 完整流程
+## 17. Algorithm 1：RECAP 完整流程
 
 算法输入：
 
@@ -1550,7 +1556,7 @@ $$
 
 ---
 
-# 18. 图 3 的整体数据流
+## 18. 图 3 的整体数据流
 
 图 3 可以理解为上下两部分。
 
@@ -1625,7 +1631,7 @@ $$
 
 ---
 
-# 19. 和 π₀ / π₀.₅ 的关系
+## 19. 和 π₀ / π₀.₅ 的关系
 
 ## 19.1 π₀
 
@@ -1705,7 +1711,7 @@ $$
 
 ---
 
-# 20. 容易混淆的点
+## 20. 容易混淆的点
 
 ## 20.1 value function 不是 reward model
 
@@ -1842,7 +1848,7 @@ $$
 
 ---
 
-# 21. 最小心智模型
+## 21. 最小心智模型
 
 可以把 RECAP 想成一个三模块系统：
 
@@ -1900,7 +1906,7 @@ $$
 
 ---
 
-# 22. 一句话最终总结
+## 22. 一句话最终总结
 
 π*₀.₆ 的 RECAP 把机器人 RL 的策略改进问题转化成了条件生成建模问题：
 
@@ -1920,7 +1926,7 @@ $$
 
 ---
 
-# 23. 符号速查表
+## 23. 符号速查表
 
 | 符号 | 含义 |
 |---|---|
@@ -1970,7 +1976,7 @@ $$
 
 ---
 
-# 24. Obsidian 渲染提示
+## 24. Obsidian 渲染提示
 
 本笔记使用 Obsidian / MathJax 兼容写法：
 

@@ -11,7 +11,6 @@ export const SITE = {
   nav: [
     { label: "Home", href: "/" },
     { label: "Notes", href: "/blog/" },
-    { label: "Research", href: "/blog/?tag=robotics" },
     { label: "GitHub", href: "https://github.com/lilyuan258", external: true }
   ]
 };

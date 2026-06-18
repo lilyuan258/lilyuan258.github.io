@@ -1,8 +1,8 @@
 ---
 title: PaliGemma VLM 学习笔记
 description: >-
-  [!summary] PaliGemma 是 Google 推出的轻量级开放权重视觉语言模型（VLM）。它使用 SigLIP 视觉编码器 来处理图像，使用
-  Gemma 文本解码器 来处理文本 prompt 并生成文本输出。它更适合做下游任务微调，而不是直接作为通用多轮视觉聊天模型使用。
+  PaliGemma 是 Google 推出的轻量级开放权重视觉语言模型（VLM）。它使用 SigLIP 视觉编码器 来处理图像，使用 Gemma 文本解码器
+  来处理文本 prompt 并生成文本输出。它更适合做下游任务微调，而不是直接作为通用多轮视觉聊天模型使用。
 pubDate: '2026-06-16'
 updatedDate: '2026-06-16'
 tags:

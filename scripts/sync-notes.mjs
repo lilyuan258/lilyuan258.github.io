@@ -170,6 +170,7 @@ function getDate(data, stat) {
 function stripMarkdown(markdown) {
   return markdown
     .replace(/```[\s\S]*?```/g, " ")
+    .replace(/\[!\w+\][+-]?\s*/gi, " ")
     .replace(/!\[\[[^\]]+\]\]/g, " ")
     .replace(/\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g, "$2 $1")
     .replace(/!\[[^\]]*\]\([^)]+\)/g, " ")
@@ -190,10 +191,18 @@ function getDescription(content) {
   return first.slice(0, 170);
 }
 
+function cleanDescription(value) {
+  return stripMarkdown(String(value ?? "")).slice(0, 170);
+}
+
 function removeDuplicateTitleHeading(content, title) {
   const escaped = title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const pattern = new RegExp(`^\\s*#\\s+${escaped}\\s*\\n+`);
   return content.replace(pattern, "");
+}
+
+function demoteBodyH1(content) {
+  return content.replace(/^#(?!#)\s+/gm, "## ");
 }
 
 function normalizeTextInsideMath(content) {
@@ -272,9 +281,10 @@ function normalizeCallouts(content) {
     info: "Info"
   };
 
-  return content.replace(/^>\s*\[!(\w+)\]\s*$/gim, (_, type) => {
+  return content.replace(/^>[^\S\r\n]*\[!(\w+)\][+-]?[^\S\r\n]*(.*)$/gim, (_, type, rest) => {
     const label = labels[type.toLowerCase()] || type;
-    return `> **${label}**`;
+    const body = String(rest ?? "").trim();
+    return body ? `> **${label}**\n> ${body}` : `> **${label}**`;
   });
 }
 
@@ -305,7 +315,7 @@ async function transformLinks(content, fileToSlug, assetIndex, copiedAssets) {
     const fileName = await copyAsset(assetPath, copiedAssets);
     transformed = transformed.replace(
       full,
-      `<img src="../../notes-assets/${encodeURIComponent(fileName)}" alt="${alt}" loading="lazy"${size} />`
+      `\n<img src="../../notes-assets/${encodeURIComponent(fileName)}" alt="${alt}" loading="lazy"${size} />\n`
     );
   }
 
@@ -394,13 +404,13 @@ async function main() {
     const date = getDate(parsed.data, stat);
     const tags = normalizeTags(parsed.data.tags);
     const publishContent = normalizeTextInsideMath(
-      removeDuplicateTitleHeading(parsed.content.trim(), title)
+      demoteBodyH1(removeDuplicateTitleHeading(parsed.content.trim(), title))
     );
     const transformed = await transformLinks(publishContent, fileToSlug, assetIndex, copiedAssets);
     const words = countWords(transformed);
     const output = matter.stringify(`${transformed}\n`, {
       title,
-      description: parsed.data.description || getDescription(parsed.content),
+      description: cleanDescription(parsed.data.description || getDescription(parsed.content)),
       pubDate: date,
       updatedDate: formatLocalDateKey(stat.mtime),
       tags,

@@ -20,8 +20,12 @@ readingTime: 11
 > 这份笔记总结了前面对 π0.5 paper 中“模型架构、离散与连续表征结合、预训练、后训练与模型技术细节”的讲解。重点解释：高层子任务预测、交叉熵损失、符号 $x_{1:M}$ 的含义、离散动作 token 与连续 action expert 的关系、flow matching 公式、timestep embedding 与 adaptive RMSNorm。
 
 ---
+
 <img src="../../notes-assets/pi0-5-1.jpg" alt="pi0.5_1.jpg" loading="lazy" />
+
+
 <img src="../../notes-assets/pi0-5-2.jpg" alt="pi0.5_2.jpg" loading="lazy" />
+
 ## 1. π0.5 的核心思想
 
 π0.5 可以理解为在 π0 基础上的一次扩展：
@@ -908,7 +912,9 @@ $$
 
 ## 18. attention mask：防止离散动作和连续动作互相泄漏
 
+
 <img src="../../notes-assets/image-1781683421772.webp" alt="image-1781683421772.webp" loading="lazy" width="498" />
+
 π0.5 同时训练：
 
 - FAST discrete action tokens；

@@ -18,9 +18,15 @@ readingTime: 10
 ---
 > 本笔记基于对话内容与论文截图整理，目标读者是假设“刚了解 Transformer”。重点解释 π₀ 的模型架构、动作表示、action expert、attention mask，以及 flow matching 的训练和推理过程。
 ---
+
 <img src="../../notes-assets/pi0-1.jpg" alt="pi0_1.jpg" loading="lazy" width="594" />
+
+
 <img src="../../notes-assets/pi0-2.jpg" alt="pi0_2.jpg" loading="lazy" />
+
+
 <img src="../../notes-assets/pi0-3.jpg" alt="pi0_3.jpg" loading="lazy" />
+
 ## 0. 一句话总览
 
 π₀ 可以理解为一个 **视觉-语言-动作模型**：
@@ -374,7 +380,7 @@ $$
 
 ---
 
-# Part II：Flow Matching 训练与推理
+## Part II：Flow Matching 训练与推理
 
 ---
 
@@ -616,29 +622,29 @@ $$
 ## 15. 训练伪代码
 
 ```python
-# 输入：数据集中的一个样本 (o_t, A_t)
-# o_t: 图像 + 语言 + 机器人状态
-# A_t: 真实未来 H 步动作 chunk
+## 输入：数据集中的一个样本 (o_t, A_t)
+## o_t: 图像 + 语言 + 机器人状态
+## A_t: 真实未来 H 步动作 chunk
 
-# 1. 采样 flow timestep
+## 1. 采样 flow timestep
 τ = sample_beta_distribution()  # π₀ 偏向采样较低 τ
 
-# 2. 采样高斯噪声
+## 2. 采样高斯噪声
 ε = normal_like(A_t)  # ε ~ N(0, I)
 
-# 3. 构造 noisy action
+## 3. 构造 noisy action
 A_noisy = τ * A_t + (1 - τ) * ε
 
-# 4. 输入模型，预测 vector field
+## 4. 输入模型，预测 vector field
 v_pred = model(o_t, A_noisy, τ)
 
-# 5. 构造训练目标
+## 5. 构造训练目标
 u_target = A_t - ε
 
-# 6. MSE 损失
+## 6. MSE 损失
 loss = mean_squared_error(v_pred, u_target)
 
-# 7. 反向传播
+## 7. 反向传播
 loss.backward()
 optimizer.step()
 ```
@@ -692,13 +698,13 @@ $$
 ## 17. 推理伪代码
 
 ```python
-# 输入：当前观测 o_t
-# 输出：未来 H 步动作 chunk A_t
+## 输入：当前观测 o_t
+## 输出：未来 H 步动作 chunk A_t
 
-# 1. 初始化随机动作噪声
+## 1. 初始化随机动作噪声
 A = normal(shape=(H, action_dim))
 
-# 2. 10 步 Euler 积分
+## 2. 10 步 Euler 积分
 num_steps = 10
 δ = 1.0 / num_steps
 
@@ -707,7 +713,7 @@ for k in range(num_steps):
     v = model(o_t, A, τ)
     A = A + δ * v
 
-# 3. A 就是最终生成的 action chunk
+## 3. A 就是最终生成的 action chunk
 execute(A)
 ```
 
