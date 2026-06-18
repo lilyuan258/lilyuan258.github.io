@@ -1,8 +1,8 @@
 export const SITE = {
-  title: "Liu Chengyuan | Embodied AI Notes",
-  name: "Liu Chengyuan",
+  title: "lilyuan | Embodied AI Notes",
+  name: "lilyuan",
   handle: "lilyuan258",
-  location: "China,Hefei",
+  location: "China,Hefei/Luoyang",
   description:
     "具身智能、VLA、π 系列模型与机器人学习的个人主页和 Obsidian 笔记发布站。",
   github: "https://github.com/lilyuan258",
