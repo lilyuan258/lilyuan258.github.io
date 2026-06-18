@@ -1,4 +1,4 @@
-# Li Yuan 个人博客
+# Lilyuan 个人博客
 
 这是一个基于 Astro 的个人主页和 Markdown 博客，用来发布 Obsidian 中关于具身智能、VLA、π 系列模型和机器人学习的笔记。
 
@@ -48,15 +48,6 @@ F:\Obisidian笔记库\x\Attachments
 
 ```text
 blog/public/notes-assets/
-```
-
-## 永不公开的文件
-
-以下文件已在同步脚本中固定排除，不会生成博客文章，也不会复制到公开附件目录：
-
-```text
-F:\Obisidian笔记库\Atlas\Notes\具身智能paper学习\💻实习具身算法工程师工作日报.md
-F:\Obisidian笔记库\Atlas\Notes\具身智能paper学习\具身智能仿真平台与算力租赁方案调研报告.pdf
 ```
 
 ## 自定义同步路径
