@@ -1,0 +1,26 @@
+---
+import { SITE } from "../site.config";
+import { withBase } from "../lib/url";
+---
+
+<header class="site-header">
+  <a class="brand" href={withBase("/")}>
+    <span class="brand-mark">LY</span>
+    <span>{SITE.name}</span>
+  </a>
+  <nav aria-label="Primary navigation">
+    {SITE.nav.map((item) => (
+      <a
+        href={item.external ? item.href : withBase(item.href)}
+        target={item.external ? "_blank" : undefined}
+        rel={item.external ? "noreferrer" : undefined}
+      >
+        {item.label}
+      </a>
+    ))}
+  </nav>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换明暗主题">
+    <span class="sun">Light</span>
+    <span class="moon">Dark</span>
+  </button>
+</header>

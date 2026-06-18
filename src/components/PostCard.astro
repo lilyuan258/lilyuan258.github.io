@@ -1,0 +1,29 @@
+---
+import type { Post } from "../lib/posts";
+import { formatDate } from "../lib/posts";
+import { withBase } from "../lib/url";
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+---
+
+<article
+  class="post-card"
+  data-title={post.data.title.toLowerCase()}
+  data-tags={(post.data.tags ?? []).join(" ").toLowerCase()}
+>
+  <div class="post-card-top">
+    <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+    {post.data.readingTime && <span>{post.data.readingTime} min</span>}
+  </div>
+  <h3>
+    <a href={withBase(`/blog/${post.id}/`)}>{post.data.title}</a>
+  </h3>
+  {post.data.description && <p>{post.data.description}</p>}
+  <div class="tag-row compact">
+    {(post.data.tags ?? []).slice(0, 5).map((tag) => <a href={withBase(`/blog/?tag=${encodeURIComponent(tag)}`)}>#{tag}</a>)}
+  </div>
+</article>

@@ -1,0 +1,50 @@
+---
+import "katex/dist/katex.min.css";
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import { SITE } from "../site.config";
+import { withBase } from "../lib/url";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const title = Astro.props.title ? `${Astro.props.title} | ${SITE.name}` : SITE.title;
+const description = Astro.props.description ?? SITE.description;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f4f7f3" />
+    <link rel="icon" href={withBase("/favicon.svg")} />
+    <title>{title}</title>
+    <script is:inline>
+      const storedTheme = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.dataset.theme = storedTheme || (prefersDark ? "dark" : "light");
+    </script>
+  </head>
+  <body>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <span>© {new Date().getFullYear()} {SITE.name}</span>
+      <span>Built with Astro and Obsidian Markdown</span>
+    </footer>
+    <script>
+      const toggle = document.querySelector("[data-theme-toggle]");
+      toggle?.addEventListener("click", () => {
+        const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        localStorage.setItem("theme", next);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,90 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import { getAllTags, sortPosts } from "../../lib/posts";
+
+const posts = sortPosts(await getCollection("posts", ({ data }) => !data.draft));
+const tags = getAllTags(posts);
+---
+
+<BaseLayout title="Notes" description="具身智能和机器人学习笔记索引">
+  <section class="blog-index">
+    <div class="index-hero">
+      <p class="eyebrow">Knowledge Index</p>
+      <h1>Notes</h1>
+      <p>从 Obsidian 同步来的具身智能、VLA、π 系列模型和机器人学习笔记。</p>
+    </div>
+
+    <div class="filter-bar">
+      <label class="search-box">
+        <span>Search</span>
+        <input data-search type="search" placeholder="搜索标题或标签" />
+      </label>
+      <div class="tag-filter" aria-label="按标签筛选">
+        <button type="button" data-tag="all" class="active">All</button>
+        {tags.map((tag) => <button type="button" data-tag={tag.toLowerCase()}>{tag}</button>)}
+      </div>
+    </div>
+
+    <div class="post-list" data-post-list>
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+    <p class="empty-state" data-empty hidden>没有找到匹配的笔记。</p>
+  </section>
+
+  <script>
+    const search = document.querySelector("[data-search]") as HTMLInputElement | null;
+    const buttons = Array.from(document.querySelectorAll("[data-tag]")) as HTMLButtonElement[];
+    const cards = Array.from(document.querySelectorAll(".post-card")) as HTMLElement[];
+    const empty = document.querySelector("[data-empty]") as HTMLElement | null;
+    const params = new URLSearchParams(window.location.search);
+    let activeTag = (params.get("tag") || "all").toLowerCase();
+
+    if (!search || !empty) {
+      throw new Error("Blog filters failed to initialize.");
+    }
+
+    const searchInput = search;
+    const emptyState = empty;
+
+    function setButtonState() {
+      buttons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.tag === activeTag);
+      });
+    }
+
+    function applyFilters() {
+      const query = searchInput.value.trim().toLowerCase();
+      let visible = 0;
+
+      cards.forEach((card) => {
+        const title = card.dataset.title || "";
+        const tags = card.dataset.tags || "";
+        const matchesQuery = !query || title.includes(query) || tags.includes(query);
+        const matchesTag = activeTag === "all" || tags.split(" ").includes(activeTag);
+        const show = matchesQuery && matchesTag;
+        card.hidden = !show;
+        if (show) visible += 1;
+      });
+
+      emptyState.hidden = visible !== 0;
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        activeTag = button.dataset.tag || "all";
+        const next = new URL(window.location.href);
+        if (activeTag === "all") next.searchParams.delete("tag");
+        else next.searchParams.set("tag", activeTag);
+        history.replaceState(null, "", next);
+        setButtonState();
+        applyFilters();
+      });
+    });
+
+    searchInput.addEventListener("input", applyFilters);
+    setButtonState();
+    applyFilters();
+  </script>
+</BaseLayout>

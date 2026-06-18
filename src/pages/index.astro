@@ -1,0 +1,84 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PostCard from "../components/PostCard.astro";
+import ContributionGrid from "../components/ContributionGrid.astro";
+import { SITE } from "../site.config";
+import {
+  compactNumber,
+  daysBetween,
+  formatDate,
+  getLatestDate,
+  getTotalWords,
+  sortPosts
+} from "../lib/posts";
+import { withBase } from "../lib/url";
+
+const posts = sortPosts(await getCollection("posts", ({ data }) => !data.draft));
+const latestPosts = posts.slice(0, 4);
+const totalWords = getTotalWords(posts);
+const latestDate = getLatestDate(posts);
+---
+
+<BaseLayout>
+  <section class="home-grid">
+    <aside class="profile-panel">
+      <img class="avatar" src={SITE.avatar} alt={`${SITE.name} GitHub avatar`} loading="eager" />
+      <h1>{SITE.name}</h1>
+      <p class="profile-location">{SITE.location}</p>
+      <div class="profile-links">
+        <a href={SITE.github} target="_blank" rel="noreferrer">GitHub</a>
+        <a href={withBase("/blog/")}>Notes</a>
+      </div>
+    </aside>
+
+    <div class="home-main">
+      <section class="intro-block">
+        <p class="eyebrow">Embodied Intelligence / VLA / Robot Learning</p>
+        <h2>把 Obsidian 里的具身智能学习笔记发布成可访问的个人知识主页。</h2>
+        <p>
+          这里整理 π₀、π0.5、π*₀.₆、PaliGemma、RTC 等方向的阅读记录，也作为后续实习和研究过程的公开索引。
+        </p>
+      </section>
+
+      <section class="stat-band" aria-label="站点统计">
+        <div>
+          <strong>{daysBetween(SITE.startDate)}</strong>
+          <span>Days Online</span>
+        </div>
+        <div>
+          <strong>{latestDate ? formatDate(latestDate) : "N/A"}</strong>
+          <span>Last Updated</span>
+        </div>
+        <div>
+          <strong>{compactNumber(totalWords)}</strong>
+          <span>Total Words</span>
+        </div>
+        <div>
+          <strong>{posts.length}</strong>
+          <span>Total Posts</span>
+        </div>
+      </section>
+
+      <section class="section-head">
+        <div>
+          <p class="eyebrow">Recent Notes</p>
+          <h2>最新笔记</h2>
+        </div>
+        <a class="text-link" href={withBase("/blog/")}>View all</a>
+      </section>
+
+      <div class="post-list compact-list">
+        {latestPosts.map((post) => <PostCard post={post} />)}
+      </div>
+
+      <section class="section-head heatmap-head">
+        <div>
+          <p class="eyebrow">Writing Activity</p>
+          <h2>笔记热力图</h2>
+        </div>
+      </section>
+      <ContributionGrid posts={posts} />
+    </div>
+  </section>
+</BaseLayout>
