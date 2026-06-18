@@ -398,15 +398,18 @@ input {
 
 .contribution-months {
   display: grid;
-  grid-template-columns: 36px repeat(var(--week-count), 12px);
+  grid-template-columns: repeat(var(--week-count), 12px);
   column-gap: 3px;
-  height: 20px;
+  height: 24px;
+  margin-bottom: 4px;
+  padding-left: 36px;
   color: var(--muted);
   font-size: 0.8rem;
   line-height: 1;
 }
 
 .contribution-months span {
+  align-self: start;
   overflow: visible;
   white-space: nowrap;
 }

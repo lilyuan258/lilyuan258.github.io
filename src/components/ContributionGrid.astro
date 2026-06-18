@@ -104,7 +104,7 @@ if (monthLabels[0]?.week !== 0) {
     <div class="contribution-chart" style={`--week-count: ${weekCount}`}>
       <div class="contribution-months" aria-hidden="true">
         {monthLabels.map((month) => (
-          <span style={`grid-column: ${month.week + 2} / span 4`}>{month.label}</span>
+          <span style={`grid-column: ${month.week + 1} / span 4`}>{month.label}</span>
         ))}
       </div>
       <div class="contribution-body">
