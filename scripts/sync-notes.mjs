@@ -153,11 +153,18 @@ function normalizeTags(tags) {
   return [];
 }
 
+function formatLocalDateKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function getDate(data, stat) {
   const value = data.created || data.date || data.pubDate;
-  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  if (value instanceof Date) return formatLocalDateKey(value);
   if (typeof value === "string" && value.trim()) return value.trim().slice(0, 10);
-  return stat.mtime.toISOString().slice(0, 10);
+  return formatLocalDateKey(stat.mtime);
 }
 
 function stripMarkdown(markdown) {
@@ -395,7 +402,7 @@ async function main() {
       title,
       description: parsed.data.description || getDescription(parsed.content),
       pubDate: date,
-      updatedDate: stat.mtime.toISOString().slice(0, 10),
+      updatedDate: formatLocalDateKey(stat.mtime),
       tags,
       draft: Boolean(parsed.data.draft),
       source: path.relative(SOURCE_DIR, file).replaceAll("\\", "/"),

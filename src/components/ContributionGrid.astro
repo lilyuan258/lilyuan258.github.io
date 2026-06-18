@@ -8,43 +8,133 @@ interface Props {
 const { posts } = Astro.props;
 const byDate = new Map<string, number>();
 
-for (const post of posts) {
-  const key = post.data.pubDate.toISOString().slice(0, 10);
-  byDate.set(key, (byDate.get(key) ?? 0) + Math.max(1, Math.ceil((post.data.wordCount ?? 1) / 800)));
+const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "short" });
+const dateFormatter = new Intl.DateTimeFormat("zh-CN", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  weekday: "long"
+});
+const weekdayLabels = [
+  { label: "Mon", row: 2 },
+  { label: "Wed", row: 4 },
+  { label: "Fri", row: 6 }
+];
+
+function startOfDay(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
-const today = new Date();
-const start = new Date(today);
-start.setDate(today.getDate() - 364);
-start.setDate(start.getDate() - start.getDay());
+function addDays(date: Date, days: number) {
+  const next = new Date(date);
+  next.setDate(date.getDate() + days);
+  return next;
+}
 
-const days = Array.from({ length: 371 }, (_, index) => {
-  const day = new Date(start);
-  day.setDate(start.getDate() + index);
-  const key = day.toISOString().slice(0, 10);
-  const value = byDate.get(key) ?? 0;
-  const level = value === 0 ? 0 : value < 2 ? 1 : value < 4 ? 2 : value < 8 ? 3 : 4;
-  return { key, value, level };
+function dateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function getLevel(value: number) {
+  if (value === 0) return 0;
+  if (value === 1) return 1;
+  if (value === 2) return 2;
+  if (value <= 4) return 3;
+  return 4;
+}
+
+for (const post of posts) {
+  const activityDate = startOfDay(post.data.updatedDate ?? post.data.pubDate);
+  const key = dateKey(activityDate);
+  byDate.set(key, (byDate.get(key) ?? 0) + 1);
+}
+
+const today = startOfDay(new Date());
+const firstVisibleDay = addDays(today, -364);
+const start = addDays(firstVisibleDay, -firstVisibleDay.getDay());
+const end = addDays(today, 6 - today.getDay());
+const weekStarts: Date[] = [];
+
+for (let weekStart = start; weekStart <= end; weekStart = addDays(weekStart, 7)) {
+  weekStarts.push(weekStart);
+}
+
+const weekCount = weekStarts.length;
+const weeks = weekStarts.map((weekStart) => {
+  const days = Array.from({ length: 7 }, (_, dayIndex) => {
+    const date = addDays(weekStart, dayIndex);
+    const key = dateKey(date);
+    const isFuture = date > today;
+    const value = isFuture ? 0 : (byDate.get(key) ?? 0);
+    const level = getLevel(value);
+    const displayDate = dateFormatter.format(date);
+    const label = isFuture
+      ? `${displayDate}: future date`
+      : value === 0
+        ? `${displayDate}: no note updates`
+        : `${displayDate}: ${value} note ${value === 1 ? "update" : "updates"}`;
+
+    return { key, value, level, label, isFuture };
+  });
+
+  return { days };
 });
+
+const days = weeks.flatMap((week) => week.days);
+const total = days.reduce((sum, day) => sum + day.value, 0);
+const monthLabels = weeks
+  .map((week, index) => {
+    const monthStart = week.days.find((day) => day.key.endsWith("-01"));
+    if (!monthStart) return undefined;
+    return { label: monthFormatter.format(new Date(`${monthStart.key}T00:00:00`)), week: index };
+  })
+  .filter(Boolean) as Array<{ label: string; week: number }>;
+
+if (monthLabels[0]?.week !== 0) {
+  monthLabels.unshift({ label: monthFormatter.format(start), week: 0 });
+}
 ---
 
-<div class="contribution-wrap" aria-label="笔记贡献热力图">
-  <div class="contribution-grid">
-    {days.map((day) => (
-      <span
-        class={`heat level-${day.level}`}
-        title={`${day.key}: ${day.value} note activity`}
-        aria-label={`${day.key}: ${day.value} note activity`}
-      />
-    ))}
+<div class="contribution-wrap" aria-label="最近一年笔记更新热力图">
+  <p class="contribution-summary">{total} note updates in the last year</p>
+  <div class="contribution-scroll">
+    <div class="contribution-chart" style={`--week-count: ${weekCount}`}>
+      <div class="contribution-months" aria-hidden="true">
+        {monthLabels.map((month) => (
+          <span style={`grid-column: ${month.week + 2} / span 4`}>{month.label}</span>
+        ))}
+      </div>
+      <div class="contribution-body">
+        <div class="contribution-weekdays" aria-hidden="true">
+          {weekdayLabels.map((day) => (
+            <span style={`grid-row: ${day.row}`}>{day.label}</span>
+          ))}
+        </div>
+        <div class="contribution-grid">
+          {days.map((day) => (
+            <span
+              class={`heat level-${day.level}${day.isFuture ? " future" : ""}`}
+              title={day.label}
+              aria-label={day.label}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="heat-legend">
-    <span>Less</span>
-    <span class="heat level-0"></span>
-    <span class="heat level-1"></span>
-    <span class="heat level-2"></span>
-    <span class="heat level-3"></span>
-    <span class="heat level-4"></span>
-    <span>More</span>
+  <div class="contribution-footer">
+    <span>Based on synced Obsidian note updates</span>
+    <div class="heat-legend" aria-label="Activity legend">
+      <span>Less</span>
+      <span class="heat level-0"></span>
+      <span class="heat level-1"></span>
+      <span class="heat level-2"></span>
+      <span class="heat level-3"></span>
+      <span class="heat level-4"></span>
+      <span>More</span>
+    </div>
   </div>
 </div>
