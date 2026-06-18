@@ -17,6 +17,7 @@ const posts = sortPosts(await getCollection("posts", ({ data }) => !data.draft))
 const latestPosts = posts.slice(0, 4);
 const totalWords = getTotalWords(posts);
 const latestDate = getLatestDate(posts);
+const statDate = latestDate ? latestDate.toISOString().slice(5, 10).replace("-", ".") : "N/A";
 ---
 
 <BaseLayout>
@@ -46,7 +47,7 @@ const latestDate = getLatestDate(posts);
           <span>Days Online</span>
         </div>
         <div>
-          <strong>{latestDate ? latestDate.toISOString().slice(0, 10) : "N/A"}</strong>
+          <strong>{statDate}</strong>
           <span>Last Updated</span>
         </div>
         <div>
