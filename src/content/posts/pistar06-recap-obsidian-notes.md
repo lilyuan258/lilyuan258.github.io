@@ -5,7 +5,7 @@ description: >-
   评估机器人当前状态的好坏；再用价值函数给数据里的动作计算 advantage（优势） ；然后把 advantage 二值化成 positive /
   negative 条件 token，喂给 VLA 继续做监督学习 / fl
 pubDate: '2026-06-18'
-updatedDate: '2026-06-18'
+updatedDate: '2026-06-23'
 tags:
   - robotics
   - VLA
@@ -16,7 +16,7 @@ tags:
   - pi06
 draft: false
 source: pistar06_recap_obsidian_notes.md
-wordCount: 8161
+wordCount: 8182
 readingTime: 17
 ---
 > **Summary**
@@ -1382,6 +1382,8 @@ $$
 ---
 
 ## 17. Algorithm 1：RECAP 完整流程
+
+<img src="../../notes-assets/2026-06-23-174337.png" alt="屏幕截图 2026-06-23 174337.png" loading="lazy" />
 
 算法输入：
 

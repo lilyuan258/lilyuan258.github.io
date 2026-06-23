@@ -13,7 +13,7 @@ tags:
   - Obsidian
 draft: false
 source: pi0.7_runtime_inference_obsidian_notes_obsidian_v2.md
-wordCount: 7418
+wordCount: 7469
 readingTime: 15
 ---
 > **abstract**
@@ -28,6 +28,12 @@ readingTime: 15
 > 论文在训练和推理阶段复用了符号 $g^\star$。训练时它表示数据集中的真实未来子目标图像；推理时它表示世界模型生成的目标图像。为避免混淆，本文把推理时的生成子目标记为 $\tilde g_t$。
 
 ---
+
+
+<img src="../../notes-assets/pi0-7.png" alt="pi0.7.png" loading="lazy" />
+
+
+<img src="../../notes-assets/20260623174714-516-1.jpg" alt="微信图片_20260623174714_516_1.jpg" loading="lazy" width="478" />
 
 ## 1. 运行时系统的整体结构
 
@@ -469,6 +475,8 @@ $$
 ---
 
 ## 6. Algorithm 1 逐行解析
+
+<img src="../../notes-assets/pi-7-alg.png" alt="pi_7 alg.png" loading="lazy" width="634" />
 
 ### 6.1 伪代码中的 `▷` 是注释符号
 
