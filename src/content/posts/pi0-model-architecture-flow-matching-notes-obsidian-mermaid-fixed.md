@@ -4,7 +4,7 @@ description: >-
   本笔记基于对话内容与论文截图整理，目标读者是假设“刚了解 Transformer”。重点解释 π₀ 的模型架构、动作表示、action
   expert、attention mask，以及 flow matching 的训练和推理过程。
 pubDate: '2026-06-16'
-updatedDate: '2026-06-18'
+updatedDate: '2026-06-24'
 tags:
   - robotics
   - vla
@@ -13,7 +13,7 @@ tags:
   - pi0
 draft: false
 source: pi0_model_architecture_flow_matching_notes_obsidian_mermaid_fixed.md
-wordCount: 4947
+wordCount: 4962
 readingTime: 10
 ---
 > 本笔记基于对话内容与论文截图整理，目标读者是假设“刚了解 Transformer”。重点解释 π₀ 的模型架构、动作表示、action expert、attention mask，以及 flow matching 的训练和推理过程。
@@ -385,6 +385,8 @@ $$
 ---
 
 ## 10. Flow matching 的基本直觉
+
+<img src="../../notes-assets/image-1782279365523.webp" alt="image-1782279365523.webp" loading="lazy" width="839" />
 
 π₀ 不直接输出动作 $A_t$，而是学习一个向量场：
 
