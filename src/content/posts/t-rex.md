@@ -16,7 +16,7 @@ tags:
   - dexterous-manipulation
 draft: false
 source: T-Rex_学习笔记_Obsidian.md
-wordCount: 6045
+wordCount: 6059
 readingTime: 13
 ---
 > **Summary**
@@ -1284,68 +1284,15 @@ $$
 
 ---
 
-## 24. Algorithm 1：伪代码重写
+## 24. Algorithm 1：伪代码
 
-```text
-Require:
-    Pretrained Action Expert f_act
-    Pretrained Tactile Expert f_tac
-    Total flow steps N
-    Slow steps K_slow
-    Fast steps K_fast = N - K_slow
-    Step size Δτ = -1/N
-    Split time τ_split = 1 - K_slow/N
-
-Shared Memory:
-    Intermediate state x_hat_split
-    KV cache KV_split
-    Execution lock
-
-Slow Stream:
-    for each action chunk window do
-        c_vl <- compute vision-language context
-        x <- sample Gaussian noise N(0, I)
-
-        for k = 1 ... K_slow do
-            τ <- 1 - (k - 1)/N
-            v <- f_act(x, τ; c_vl)
-            x <- x + Δτ * v
-        end for
-
-        acquire lock
-        x_hat_split <- x
-        KV_split <- concat(KV_latent, reencoded_action_KV(x_hat_split))
-        release lock
-    end for
-
-Fast Stream:
-    for δ in {0, 4, 8, 12} inside the action chunk do
-        c_tac <- read real-time tactile stream
-
-        acquire lock
-        kv <- clone(KV_split)
-        x <- clone(x_hat_split)
-        release lock
-
-        for k = 1 ... K_fast do
-            τ <- τ_split - (k - 1)/N
-            v <- f_tac(x, τ; c_tac, kv)
-            x <- x + Δτ * v
-        end for
-
-        A_hat[t+δ : t+δ+T_a] <- x
-        execute updated action chunk
-    end for
-```
-
----
+<img src="../../notes-assets/t-rex.png" alt="T-rex伪代码.png" loading="lazy" />
 
 ## 25. Algorithm 1 逐步解释
 
 ### 25.1 共享内存
 
 共享：
-
 $$
 \widehat{\mathbf x}_{\tau_{\text{split}}}
 $$
