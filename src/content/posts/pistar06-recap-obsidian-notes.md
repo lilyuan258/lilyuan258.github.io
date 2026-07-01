@@ -5,7 +5,7 @@ description: >-
   评估机器人当前状态的好坏；再用价值函数给数据里的动作计算 advantage（优势） ；然后把 advantage 二值化成 positive /
   negative 条件 token，喂给 VLA 继续做监督学习 / fl
 pubDate: '2026-06-18'
-updatedDate: '2026-06-23'
+updatedDate: '2026-06-29'
 tags:
   - robotics
   - VLA
@@ -16,7 +16,7 @@ tags:
   - pi06
 draft: false
 source: pistar06_recap_obsidian_notes.md
-wordCount: 8182
+wordCount: 8205
 readingTime: 17
 ---
 > **Summary**
@@ -25,6 +25,9 @@ readingTime: 17
 > 推理时，直接让模型在 `Advantage: positive` 条件下生成动作，相当于从全部数据中提取更优策略。
 
 ---
+
+<img src="../../notes-assets/2026-06-29-102139.png" alt="屏幕截图 2026-06-29 102139.png" loading="lazy" width="674" />
+
 
 <img src="../../notes-assets/pi0-6-1.jpg" alt="pi0.6_1.jpg" loading="lazy" />
 
