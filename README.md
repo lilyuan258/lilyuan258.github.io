@@ -35,7 +35,7 @@ npm run build
 `npm run sync` 默认会读取上一级目录的 Markdown 笔记，也就是：
 
 ```text
-F:\Obisidian笔记库\Atlas\Notes\具身智能paper学习
+F:\Obisidian笔记库\Atlas\Notes\Embodied AI学习记录
 ```
 
 附件默认会从这里查找：
@@ -55,7 +55,7 @@ blog/public/notes-assets/
 如果以后移动了博客目录，可以用环境变量指定 Obsidian 笔记和附件路径：
 
 ```powershell
-$env:OBSIDIAN_SOURCE_DIR="F:\Obisidian笔记库\Atlas\Notes\具身智能paper学习"
+$env:OBSIDIAN_SOURCE_DIR="F:\Obisidian笔记库\Atlas\Notes\Embodied AI学习记录"
 $env:OBSIDIAN_ATTACHMENT_DIRS="F:\Obisidian笔记库\x\Attachments"
 npm run sync
 ```
@@ -63,7 +63,7 @@ npm run sync
 在 Linux/macOS 设备上，推荐在博客仓库根目录创建本地 `.env.local`。该文件会被 `npm run sync` 自动读取，并且已被 `.gitignore` 忽略，不会提交到 Git：
 
 ```bash
-OBSIDIAN_SOURCE_DIR=/path/to/Obisidian笔记库/Atlas/Notes/具身智能paper学习
+OBSIDIAN_SOURCE_DIR=/path/to/Obisidian笔记库/Atlas/Notes/Embodied AI学习记录
 OBSIDIAN_ATTACHMENT_DIRS=/path/to/Obisidian笔记库/x/Attachments
 ```
 

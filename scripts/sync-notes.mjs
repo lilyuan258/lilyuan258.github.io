@@ -36,7 +36,7 @@ const RECURSIVE = process.argv.includes("--recursive");
 const DRY_RUN = process.argv.includes("--dry-run");
 
 const excludedDirs = new Set(["blog", "node_modules", ".git", ".obsidian", ".trash", "dist", ".astro"]);
-const excludedSourceNames = new Set(["💻实习具身算法工程师工作日报.md", "tmux入门.md"]);
+const excludedSourceNames = new Set(["💻实习具身算法工程师工作日报.md"]);
 const excludedAssetNames = new Set(["具身智能仿真平台与算力租赁方案调研报告.pdf"]);
 const attachmentExts = new Set([
   ".jpg",
