@@ -60,6 +60,13 @@ $env:OBSIDIAN_ATTACHMENT_DIRS="F:\Obisidian笔记库\x\Attachments"
 npm run sync
 ```
 
+在 Linux/macOS 设备上，推荐在博客仓库根目录创建本地 `.env.local`。该文件会被 `npm run sync` 自动读取，并且已被 `.gitignore` 忽略，不会提交到 Git：
+
+```bash
+OBSIDIAN_SOURCE_DIR=/path/to/Obisidian笔记库/Atlas/Notes/具身智能paper学习
+OBSIDIAN_ATTACHMENT_DIRS=/path/to/Obisidian笔记库/x/Attachments
+```
+
 多个附件目录可以用英文分号分隔：
 
 ```powershell

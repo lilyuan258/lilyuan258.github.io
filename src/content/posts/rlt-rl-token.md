@@ -2,11 +2,11 @@
 title: RL-Token / RLT 学习笔记：基于 RL Token 的 VLA 在线强化学习
 description: RL Token / RLT 学习笔记：基于 RL Token 的 VLA 在线强化学习
 pubDate: '2026-07-01'
-updatedDate: '2026-07-01'
+updatedDate: '2026-07-07'
 tags: []
 draft: false
 source: RLT_RL-Token_学习笔记_Obsidian.md
-wordCount: 6220
+wordCount: 6239
 readingTime: 13
 ---
 > **Summary**
@@ -15,7 +15,10 @@ readingTime: 13
 
 ---
 
-<img src="../../notes-assets/2026-07-01-145348.png" alt="屏幕截图 2026-07-01 145348.png" loading="lazy" width="536" />
+<img src="../../notes-assets/2026-07-01-145348.png" alt="屏幕截图 2026-07-01 145348.png" loading="lazy" />
+
+
+<img src="../../notes-assets/2026-07-01-163330.png" alt="屏幕截图 2026-07-01 163330.png" loading="lazy" />
 
 
 ## 1. 这篇工作想解决什么问题

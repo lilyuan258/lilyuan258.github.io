@@ -5,7 +5,7 @@ description: >-
   text{高频触觉闭环精修} Action Expert 负责 flow matching 的前半段去噪，Tactile Expert
   负责后半段去噪。两者沿同一条生成轨迹接力，而不是分
 pubDate: '2026-06-26'
-updatedDate: '2026-06-26'
+updatedDate: '2026-07-07'
 tags:
   - embodied-ai
   - VLA
@@ -16,7 +16,7 @@ tags:
   - dexterous-manipulation
 draft: false
 source: T-Rex_学习笔记_Obsidian.md
-wordCount: 6059
+wordCount: 6057
 readingTime: 13
 ---
 > **Summary**
@@ -35,10 +35,10 @@ readingTime: 13
 <img src="../../notes-assets/2026-06-26-103737.png" alt="屏幕截图 2026-06-26 103737.png" loading="lazy" />
 
 
-<img src="../../notes-assets/t-rex1.jpg" alt="T-rex1.jpg" loading="lazy" width="573" />
+<img src="../../notes-assets/t-rex1.jpg" alt="T-rex1.jpg" loading="lazy" width="589" />
 
 
-<img src="../../notes-assets/t-rex2.jpg" alt="T-REX2.jpg" loading="lazy" width="526" height="702" />
+<img src="../../notes-assets/t-rex2.jpg" alt="T-REX2.jpg" loading="lazy" width="588" />
 
 
 <img src="../../notes-assets/t-rex3.jpg" alt="T-Rex3.jpg" loading="lazy" width="593" />

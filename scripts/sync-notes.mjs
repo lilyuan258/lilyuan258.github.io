@@ -4,6 +4,29 @@ import crypto from "node:crypto";
 import matter from "gray-matter";
 
 const BLOG_ROOT = process.cwd();
+
+async function loadLocalEnv(filePath) {
+  let content = "";
+  try {
+    content = await fs.readFile(filePath, "utf8");
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+    return;
+  }
+
+  for (const line of content.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const match = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
+    if (!match) continue;
+    const [, key, rawValue] = match;
+    if (process.env[key] !== undefined) continue;
+    process.env[key] = rawValue.replace(/^(["'])(.*)\1$/, "$2");
+  }
+}
+
+await loadLocalEnv(path.join(BLOG_ROOT, ".env.local"));
+
 const SOURCE_DIR = path.resolve(process.env.OBSIDIAN_SOURCE_DIR || "..");
 const VAULT_SEARCH_DIR = path.resolve(process.env.OBSIDIAN_VAULT_DIR || path.join(SOURCE_DIR, ".."));
 const DEFAULT_ATTACHMENT_DIR = path.resolve(SOURCE_DIR, "..", "..", "..", "x", "Attachments");
@@ -13,7 +36,7 @@ const RECURSIVE = process.argv.includes("--recursive");
 const DRY_RUN = process.argv.includes("--dry-run");
 
 const excludedDirs = new Set(["blog", "node_modules", ".git", ".obsidian", ".trash", "dist", ".astro"]);
-const excludedSourceNames = new Set(["💻实习具身算法工程师工作日报.md"]);
+const excludedSourceNames = new Set(["💻实习具身算法工程师工作日报.md", "tmux入门.md"]);
 const excludedAssetNames = new Set(["具身智能仿真平台与算力租赁方案调研报告.pdf"]);
 const attachmentExts = new Set([
   ".jpg",
@@ -160,11 +183,26 @@ function formatLocalDateKey(date) {
   return `${year}-${month}-${day}`;
 }
 
-function getDate(data, stat) {
-  const value = data.created || data.date || data.pubDate;
+function formatDateValue(value) {
   if (value instanceof Date) return formatLocalDateKey(value);
   if (typeof value === "string" && value.trim()) return value.trim().slice(0, 10);
-  return formatLocalDateKey(stat.mtime);
+  return undefined;
+}
+
+function getDate(data, stat, existing) {
+  return (
+    formatDateValue(data.created || data.date || data.pubDate) ||
+    formatDateValue(existing?.data?.pubDate) ||
+    formatLocalDateKey(stat.mtime)
+  );
+}
+
+function getUpdatedDate(data, stat, existing, contentChanged) {
+  return (
+    formatDateValue(data.updated || data.updatedDate || data.modified) ||
+    (!contentChanged && formatDateValue(existing?.data?.updatedDate || existing?.data?.pubDate)) ||
+    formatLocalDateKey(stat.mtime)
+  );
 }
 
 function stripMarkdown(markdown) {
@@ -353,6 +391,28 @@ async function transformLinks(content, fileToSlug, assetIndex, copiedAssets) {
   return transformed;
 }
 
+async function loadExistingPosts() {
+  const bySource = new Map();
+  const bySlug = new Map();
+  let entries = [];
+  try {
+    entries = await fs.readdir(POSTS_DIR, { withFileTypes: true });
+  } catch {
+    return { bySource, bySlug };
+  }
+
+  for (const entry of entries) {
+    if (!entry.isFile() || !entry.name.toLowerCase().endsWith(".md")) continue;
+    const fullPath = path.join(POSTS_DIR, entry.name);
+    const parsed = matter(await fs.readFile(fullPath, "utf8"));
+    const record = { data: parsed.data, content: parsed.content, slug: path.basename(entry.name, ".md") };
+    if (typeof parsed.data.source === "string" && parsed.data.source) bySource.set(parsed.data.source, record);
+    bySlug.set(record.slug, record);
+  }
+
+  return { bySource, bySlug };
+}
+
 async function cleanGeneratedDirs() {
   if (DRY_RUN) return;
   await fs.rm(POSTS_DIR, { recursive: true, force: true });
@@ -367,6 +427,7 @@ async function main() {
   await ensureDir(ASSETS_DIR);
 
   const markdownFiles = await listMarkdownFiles(SOURCE_DIR, RECURSIVE);
+  const existingPosts = await loadExistingPosts();
   const assetIndex = new Map();
   for (const dir of attachmentDirs) {
     await walkAssets(dir, assetIndex);
@@ -378,7 +439,9 @@ async function main() {
     const raw = await fs.readFile(file, "utf8");
     const parsed = matter(raw);
     const title = getTitle(parsed.content, parsed.data, file);
-    const date = getDate(parsed.data, await fs.stat(file));
+    const source = path.relative(SOURCE_DIR, file).replaceAll("\\", "/");
+    const existing = existingPosts.bySource.get(source);
+    const date = getDate(parsed.data, await fs.stat(file), existing);
     let slug = slugify(path.basename(file, ".md")) || slugify(title) || `note-${date}`;
     if (slug.endsWith("-obsidian")) slug = slug.slice(0, -9);
     if (!slug) slug = `note-${hash(file, 6)}`;
@@ -399,23 +462,26 @@ async function main() {
     const stat = await fs.stat(file);
     const parsed = matter(raw);
     const title = getTitle(parsed.content, parsed.data, file);
+    const source = path.relative(SOURCE_DIR, file).replaceAll("\\", "/");
     const sourceBase = path.basename(file, ".md").toLowerCase();
     const slug = fileToSlug.get(sourceBase);
-    const date = getDate(parsed.data, stat);
+    const existing = existingPosts.bySource.get(source) || existingPosts.bySlug.get(slug);
+    const date = getDate(parsed.data, stat, existing);
     const tags = normalizeTags(parsed.data.tags);
     const publishContent = normalizeTextInsideMath(
       demoteBodyH1(removeDuplicateTitleHeading(parsed.content.trim(), title))
     );
     const transformed = await transformLinks(publishContent, fileToSlug, assetIndex, copiedAssets);
+    const contentChanged = existing ? transformed.trim() !== existing.content.trim() : true;
     const words = countWords(transformed);
     const output = matter.stringify(`${transformed}\n`, {
       title,
       description: cleanDescription(parsed.data.description || getDescription(parsed.content)),
       pubDate: date,
-      updatedDate: formatLocalDateKey(stat.mtime),
+      updatedDate: getUpdatedDate(parsed.data, stat, existing, contentChanged),
       tags,
       draft: Boolean(parsed.data.draft),
-      source: path.relative(SOURCE_DIR, file).replaceAll("\\", "/"),
+      source,
       wordCount: words,
       readingTime: Math.max(1, Math.ceil(words / 500))
     });
