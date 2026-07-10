@@ -19,7 +19,7 @@ tags:
   - FAAS
 draft: false
 source: UniDex_精读学习笔记_Obsidian.md
-wordCount: 4109
+wordCount: 4159
 readingTime: 9
 ---
 > **abstract**
@@ -42,6 +42,8 @@ readingTime: 9
 相关笔记：[T-Rex_学习笔记_Obsidian](../t-rex/)、[pi05_architecture_learning_notes_obsidian](../pi05-architecture-learning-notes/)、[pi0_model_architecture_flow_matching_notes_obsidian_mermaid_fixed](../pi0-model-architecture-flow-matching-notes-obsidian-mermaid-fixed/)。
 
 ---
+
+<img src="../../notes-assets/2026-07-10-16-48-32.png" alt="截图 2026-07-10 16-48-32.png" loading="lazy" width="943" />
 
 ## 1. 一句话理解 UniDex
 
@@ -212,6 +214,8 @@ human videos
 ## 6. FAAS：Function–Actuator–Aligned Space
 
 FAAS 是论文最关键的 action representation。
+
+<img src="../../notes-assets/2026-07-10-15-39-04.png" alt="截图 2026-07-10 15-39-04.png" loading="lazy" width="535" />
 
 ### 6.1 为什么需要 FAAS
 
